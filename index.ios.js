@@ -1,35 +1,84 @@
+'use strict'
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
  * @flow
  */
 
-import React, { Component } from 'react';
+import React from 'react'
+import Icon from 'react-native-vector-icons/Ionicons'
 import {
   AppRegistry,
   StyleSheet,
   Text,
+  Navigator,
+  TouchableOpacity,
+  TabBarIOS,
   View
-} from 'react-native';
+} from 'react-native'
 
-export default class gougouApp extends Component {
+var List = require('./app/list/index.js')
+var Edit = require('./app/edit/index.js')
+var Account = require('./app/account/index.js')
+
+var gougouApp = React.createClass({
+  getInitialState() {
+    return {
+      selectedTab: 'account',
+      notifCount: 0,
+      presses: 0,
+    }
+  },
+  _selectTab(tabName){
+    this.setState({
+      selectedTab: tabName
+    })
+  },
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
-      </View>
-    );
+      <TabBarIOS tintColor="#ee735c">
+        <Icon.TabBarItemIOS
+          title="首页"
+          iconSize={30}
+          iconName="ios-home-outline"
+          selectedIconName="ios-home"
+          selected={this.state.selectedTab === 'list'}
+          onPress={() => this._selectTab('list')}>
+          <Navigator
+            initialRoute={{name: 'list', component: List }}
+            configureScene={
+              (route) => {
+                return Navigator.SceneConfigs.FloatFromRight
+              }
+            }
+            renderScene={
+              (route, navigator) => {
+                var Component = route.component
+                return <Component {...route.params} navigator={navigator} />
+              }
+            }
+          />
+        </Icon.TabBarItemIOS>
+        <Icon.TabBarItemIOS
+          title="视频"
+          iconName="ios-videocam-outline"
+          selectedIconName="ios-videocam"
+          selected={this.state.selectedTab === 'edit'}
+          onPress={() => this._selectTab('edit')}>
+          <Edit />
+        </Icon.TabBarItemIOS>
+        <Icon.TabBarItemIOS
+          title="我"
+          iconName="ios-person-outline"
+          selectedIconName="ios-person"
+          selected={this.state.selectedTab === 'account'}
+          onPress={() => this._selectTab('account')}>
+          <Account />
+        </Icon.TabBarItemIOS>
+      </TabBarIOS>
+    )
   }
-}
+})
 
 const styles = StyleSheet.create({
   container: {
@@ -38,16 +87,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  tabContent: {
+    flex: 1,
+    alignItems: 'center',
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  tabText: {
+    color: 'white',
+    margin: 50,
   },
-});
+})
 
-AppRegistry.registerComponent('gougouApp', () => gougouApp);
+AppRegistry.registerComponent('gougouApp', () => gougouApp)
