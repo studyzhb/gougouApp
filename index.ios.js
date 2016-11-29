@@ -30,13 +30,14 @@ var gougouApp = React.createClass({
     }
   },
   _selectTab(tabName){
+
     this.setState({
       selectedTab: tabName
     })
   },
   render() {
     return (
-      <TabBarIOS tintColor="#ee735c">
+      <TabBarIOS tintColor="#ee735c" style={{height: 100}}>
         <Icon.TabBarItemIOS
           title="首页"
           iconSize={30}
@@ -81,20 +82,7 @@ var gougouApp = React.createClass({
 })
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  tabContent: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  tabText: {
-    color: 'white',
-    margin: 50,
-  },
+  
 })
 
 AppRegistry.registerComponent('gougouApp', () => gougouApp)

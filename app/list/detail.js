@@ -7,11 +7,14 @@ import {
   TouchableOpacity,
   View,
   Dimensions,
+  TextInput,
   ActivityIndicator,
   AlertIOS,
   Image,
   ScrollView,
   ListView,
+  Modal,
+  TouchableHighlight,
 } from 'react-native'
 
 var Video = require('react-native-video').default
@@ -20,8 +23,21 @@ var Icon = require('react-native-vector-icons/Ionicons')
 var request = require('../common/request')
 var config = require('../common/config')
 
+var cacheResults = {
+  comments: {
+    list: [],
+    nextPage: 1
+  }
+}
 var Detail = React.createClass({
   getInitialState() {
+    //重置数据
+    cacheResults = {
+      comments: {
+        list: [],
+        nextPage: 1
+      }
+    }
     var ds = new ListView.DataSource({rowHasChanged : (r1, r2) => r1 !== r2})
     return {
       reate: 1,
@@ -29,7 +45,7 @@ var Detail = React.createClass({
       resizeMode: 'contain',
       repeat: false,
       videoLoaded: false,
-      paused: true,
+      paused: false,
       playing: false,
 
       videoOk: true,
@@ -39,25 +55,19 @@ var Detail = React.createClass({
       videoTotal: 0,
       currentTime: 0,
 
-      commentsDataSource: ds.cloneWithRows([])
+      commentsDataSource: ds.cloneWithRows([]),
+      isLoadingComments: false,
+      hasMoreComments: true,
+  
+      modalVisible: false, 
+      commentContent: '',
+
     }
   },
-  componentDidMount(){
-    //获取评论列表数据
-    this._fetchCommentsData(1)
-  },
-  _fetchCommentsData(page) {
-    request.get(config.api.base + config.api.comments, {page: page})
-    .then((data) => {
-      console.log(data)
-    })
-    .catch((err) => {
-
-      console.log("-----error-------", err)
-    });
-  },
   _pop() {
-    this.props.navigator.pop()
+    this.refs.videoPlayer.seek(135)
+
+    // this.props.navigator.pop()
   },
   _onLoadStart(data) {
   },
@@ -98,17 +108,18 @@ var Detail = React.createClass({
     this.refs.videoPlayer.seek(0)
   },
   _pause() {
-    if(!this.state.paused) {
-      this.setState({
-        paused: true
-      })
-    }
+    this.setState({
+      paused: true
+    })
   },
   _resume() {
     if(this.state.paused) {
       this.setState({
         paused: false
       })
+    }
+    if(this.state.videoProgress == 1) {
+      this._rePlay()
     }
   },
   _proceedPlay(){
@@ -153,21 +164,11 @@ var Detail = React.createClass({
             !this.state.videoLoaded ? <ActivityIndicator color='#ee735c' style={styles.loading}/> : null
           }
           {
-            //播放控制
-            this.state.videoLoaded && !this.state.playing
-            ? <Icon 
-                onPress={this._rePlay}
-                name='ios-play'
-                size={30}
-                style={styles.playIcon} />
-            : null
-          }
-          {
-            //视频暂停
-            this.state.videoLoaded && this.state.playing
+            //视频播放控制
+            this.state.videoLoaded
             ? <TouchableOpacity style={styles.pauseBtn} onPress={this._pause}>
                 {
-                  this.state.paused
+                  this.state.paused || this.state.videoProgress == 1
                   ? <Icon 
                       onPress={this._resume}
                       name='ios-play'
@@ -184,27 +185,182 @@ var Detail = React.createClass({
               </View>
             </View>
           </TouchableOpacity>
-         </View>
-         <ScrollView 
-          enableEmptySections={true}
-          showsVerticalScrollInsets={false}
-          automaticallyAdjustContentInsets={false}
-          style={styles.scrollView}>
+        </View>
           <View style={styles.infoBox}>
-            <Image source={{uri: 'http://oh13njw2l.bkt.clouddn.com/1.jpg'}} style={styles.avatar} />
+            <Image source={{uri: 'http://oh13njw2l.bkt.clouddn.com/1.jpg?imageView2/0/w/200/h/200'}} style={styles.avatar} />
             <View style={styles.descBox}>
               <Text style={styles.nickname}>里的骄傲是来</Text>
               <Text style={styles.title}>大山里的骄傲是来得及案例三等奖爱丽丝爱神的箭asdlkas asd </Text>
             </View>
           </View>
-         </ScrollView>
+          <View style={styles.commentArea}>
+            <ListView
+              dataSource={this.state.commentsDataSource}
+              renderRow={this._renderCommentRow}
+              renderFooter={this._renderCommentsFooter}
+              automaticallyAdjustContentInsets={false}
+              onEndReached={this._fetchMoreComments}
+              onEndReachedThreshold={20}
+              enableEmptySections={true}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+          <View style={styles.bottomBox}>
+            <TextInput
+              placeholder='请评论...'
+              placeholderTextColor='red'
+              autoCorrect={true}
+              autoFocus={false}
+              editable={true}
+              multiline={true}
+              maxLength={200}
+              onFocus={this._focusComment}
+              style={styles.commentInput}
+            />
+          </View>
+          <Modal
+            animationType={"fade"}
+            transparent={false}
+            visible={this.state.modalVisible}
+            onShow={this._onModalShow}>
+            <View style={styles.modalBox}>
+              <Text style={styles.modalTitle}>请填写评论内容</Text>
+              <TouchableHighlight onPress={() => {
+                this._setModalVisible(!this.state.modalVisible)
+              }}>
+                <Icon
+                  name='ios-close'
+                  size={30}
+                  style={styles.modalColseIcon}
+                />
+              </TouchableHighlight>
+              <TextInput
+                multiline={true}
+                maxLength={200}
+                style={styles.modalInput}
+                onChange={this._changeCommentContent}
+              />
+
+              <TouchableOpacity 
+                style={styles.commentSubmitBtn}
+                onPress={this._submitComment}>
+                <Text style={styles.commentSubmitBtnText}>评论</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+
       </View>
     )
-  }
+  },
+  _changeCommentContent(event) {
+    var text = event.nativeEvent.text
+    this.setState({
+      commentContent: text
+    })
+  },
+  _submitComment() {
+    this._setModalVisible(false)
+  },
+  _focusComment(){
+    this.setState({
+      modalVisible: true
+    })
+  },
+  _setModalVisible(visible) {
+    this.setState({
+      modalVisible: visible
+    })
+  },
+  componentDidMount(){
+    //获取评论列表数据
+    this._fetchCommentsData(cacheResults.comments.nextPage)
+  },
+  _hasMoreComments() {
+    return this.state.hasMoreComments
+  },
+  _renderCommentsFooter(){
+    if(this.state.isLoadingComments) {
+      return null
+    }
+    if(!this._hasMoreComments()){
+      return (
+        <View style={styles.loadingMore}>
+          <Text style={styles.loadingMoreText}>没有更多了</Text>
+        </View>
+      )
+    }
+    return (
+      <ActivityIndicator
+        animating={true}
+        color={'#ee735c'}
+        style={styles.loadingMore} />
+    )
+  },
+  _fetchMoreComments(){
+    if(!this.state.isLoadingComments && this._hasMoreComments()){
+     this._fetchCommentsData(cacheResults.comments.nextPage)
+    }
+  },
+  _fetchCommentsData(page) {
+    this.setState({
+      isLoadingComments: true,
+    })
+    var that = this
+    var url = config.api.base + config.api.comments
+    request.get(
+      url,
+      {
+        page: page,
+
+        take: 2,
+        creationId: '5833f6f4ab266a18181c933e'
+      }
+    )
+    .then((data) => {
+      if(!data.status) {
+        AlertIOS.alert('评论加载失败')
+      }else{
+        var _state = {}
+        if(data.data.length > 0) {
+          cacheResults.comments.list = cacheResults.comments.list.concat(data.data)
+          cacheResults.comments.nextPage += 1
+          _state.commentsDataSource = that.state.commentsDataSource.cloneWithRows(cacheResults.comments.list)
+        } else {
+          _state.hasMoreComments = false
+        }
+        _state.isLoadingComments = false
+        that.setState(_state)
+      }
+    })
+    .catch((err) => {
+      that.setState({
+        isLoadingComments: false,
+        hasMoreComments: false
+      })
+      console.log("-----error-------", err)
+    });
+  },
+  _renderCommentRow(row){
+    var data = row
+    return (
+      <View style={styles.commentBox}>
+        <Image source={{uri: 'http://oh13njw2l.bkt.clouddn.com/2.jpg?imageView2/0/w/100/h/100'}} style={styles.commentAvatar} />
+        <View style={styles.commentInfo}>
+          <View style={styles.commentTitle}>
+            <Text style={styles.commentNickName}>{data.userId._id}</Text>
+            <Icon name="ios-star-outline" size={20} style={styles.commentStar} />
+          </View>
+          <Text style={styles.commentContent}>{data.comment.content}</Text>
+          <Text style={styles.commentTime}>{data.meta.createAt}</Text>
+        </View>
+      </View>
+    )
+  },
+
 })
 
 var videoWidth = windowWidth
-var videoHeight = windowWidth * 0.8
+var videoHeight = windowWidth * 0.56
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -287,20 +443,6 @@ const styles = StyleSheet.create({
     height: 3,
     backgroundColor: '#ccc'
   },
-  playIcon: {
-    position: 'absolute',
-    width: 40,
-    height: 40,
-    left: videoWidth / 2 - 20,
-    top: videoWidth / 2 - 20,
-    paddingTop: 5,
-    paddingLeft: 15,
-    borderColor: '#fff',
-    borderWidth: 1,
-    borderRadius: 20,
-    backgroundColor: 'transparent',
-    color: '#ed7b66'
-  },
   pauseBtn: {
     position: 'absolute',
     left: 0,
@@ -333,30 +475,156 @@ const styles = StyleSheet.create({
     top: videoHeight / 2 + 20,
   },
   infoBox: {
-    marginTop: 10,
+    marginTop: 3,
     width: windowWidth,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 10,
+    backgroundColor: '#fff'
   },
   avatar: {
     margin: 5,
-    borderRadius: 30,
-    width: 60,
-    height: 60,
+    borderRadius: 25,
+    width: 50,
+    height: 50,
   },
   descBox: {
     flex: 1,
+    marginHorizontal: 10
   },
   nickname: {
-    fontSize: 18,
+    fontSize: 16,
   },
   title: {
     marginTop: 8,
-    fontSize: 16,
+    fontSize: 14,
     color: '#666'
   },
-
+  commentArea: {
+    flex: 1,
+    width: windowWidth
+  },
+  commentBox: {
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    marginHorizontal: 5, 
+  },
+  commentAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    margin: 10
+  },
+  commentInfo: {
+    flex: 1
+  },
+  commentTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 30,
+  },
+  commentNickName: {
+    fontSize: 14
+  },
+  commentStar: {
+    width: 20,
+    height: 20,
+    position: 'absolute',
+    right: 10
+  },
+  commentContent: {
+    fontSize: 12,
+    color: '#ccc'
+  },
+  commentTime: {
+    fontSize: 10,
+    color: '#666',
+    textAlign: 'right',
+    paddingRight: 10,
+    marginVertical: 5,
+  },
+  loadingMoreText: {
+    alignSelf: 'center',
+    fontSize: 14,
+    color: '#666',
+    marginVertical: 5
+  },
+  bottomBox: {
+    position: 'absolute',
+    bottom: 48,
+    width: windowWidth,
+    backgroundColor: '#fff'
+  },
+  commentInput: {
+    width: windowWidth * 0.5,
+    minHeight: 30,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginHorizontal: 5,
+    fontSize: 12,
+    marginVertical: 2,
+    alignSelf: 'flex-start',
+    padding: 5
+  },
+  //modal
+  modalBox: {
+    flex: 1,
+    width: windowWidth,
+    height: 300,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginTop: windowWidth * .2,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    alignSelf: 'center'
+  },
+  modalColseIcon: {
+    width: 40,
+    height: 40,
+    color: 'red',
+    paddingLeft: 13,
+    paddingTop: 5,
+    alignSelf: 'center',
+    marginVertical: 10,
+    borderRadius: 20,
+    borderColor: '#ee735c',
+    borderWidth: 1,
+  },
+  modalInput: {
+    width: windowWidth * .9,
+    height: 60,
+    padding: 5,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    alignSelf: 'center',
+    borderRadius: 5,
+    color: 'red',
+    fontSize: 14
+  },
+  commentSubmitBtn: {
+    width: windowWidth * 0.8,
+    height: 50,
+    backgroundColor: 'transparent',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#ee735c',
+    marginHorizontal: 10,
+    marginVertical: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#eee'
+  },
+  commentSubmitBtnText: {
+    fontSize: 18,
+    color: '#ee735c',
+    fontWeight: '600'
+  }
 
 })
 

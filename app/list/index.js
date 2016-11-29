@@ -82,7 +82,7 @@ var List = React.createClass({
     .catch((error) => {
       that.setState({
         isLoadingTail: false,
-        isRefreshing: false
+        isRefreshing: false,
       })
       console.error(error);
     });
@@ -133,30 +133,30 @@ var List = React.createClass({
   },
   render() {
     return (
-      <View style={styles.container}>
-      	<View style={styles.header}> 
-          <Text style={styles.headerTitle}>首页</Text>
+        <View style={styles.container}>
+          <View style={styles.header}> 
+            <Text style={styles.headerTitle}>首页</Text>
+          </View>
+          <ListView
+            dataSource={this.state.dataSource}
+            renderRow={this._renderRow}
+            renderFooter={this._renderFooter}
+            automaticallyAdjustContentInsets={false}
+            onEndReached={this._fetchMore}
+            onEndReachedThreshold={20}
+            enableEmptySections={true}
+            refreshControl={
+              <RefreshControl
+                refreshing={ this.state.isRefreshing }
+                onRefresh={ this._refreshMore }
+                tintColor="gray"
+                title="拼命加载中..."
+                colors={['#ff0000', '#00ff00', '#0000ff']}
+                progressBackgroundColor="gray"/>
+            }
+            showsVerticalScrollIndicator={false}
+          />
         </View>
-        <ListView
-          dataSource={this.state.dataSource}
-          renderRow={this._renderRow}
-          renderFooter={this._renderFooter}
-          automaticallyAdjustContentInsets={false}
-          onEndReached={this._fetchMore}
-          onEndReachedThreshold={0}
-          enableEmptySections={true}
-          refreshControl={
-            <RefreshControl
-              refreshing={ this.state.isRefreshing }
-              onRefresh={ this._refreshMore }
-              tintColor="gray"
-              title="拼命加载中..."
-              colors={['#ff0000', '#00ff00', '#0000ff']}
-              progressBackgroundColor="gray"/>
-          }
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
     )
   }
 })
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     color: '#777',
     textAlign: 'center'
   },
-
+  
 })
 
 module.exports = List

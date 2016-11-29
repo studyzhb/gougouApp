@@ -5,7 +5,8 @@ var ReactNative = require('react-native')
 var TouchableHighlight = ReactNative.TouchableHighlight
 var View = ReactNative.View
 var Text = ReactNative.Text
-var Image= ReactNative.Image
+var Image = ReactNative.Image
+var AlertIOS = ReactNative.AlertIOS
 var Icon = require('react-native-vector-icons/Ionicons')
 var StyleSheet = ReactNative.StyleSheet
 var Dimensions = ReactNative.Dimensions
@@ -13,38 +14,58 @@ var Dimensions = ReactNative.Dimensions
 var windowWidth = Dimensions.get('window').width
 
 var Item = React.createClass({
+  getInitialState() {
+    return {
+      love: false
+    }
+  },
+  _love() {
+    this.setState({
+      love: !this.state.love
+    })
+    var creationId = this.refs.creationId.props.value
+    AlertIOS.alert(creationId)
+    
+  },
   render() {
     var data = this.props.data
     return (
-      <TouchableHighlight onPress={this.props.onSelect}>
         <View style={styles.item}>
-          <Text style={styles.itemTitle}>{data.title}</Text>
-          <Image
-            source={{uri: data.thumb}}
-            style={styles.thumb} >
-            <Icon 
-              name='ios-play'
-              size={28}
-              style={styles.playIcon}/>
-          </Image>  
+          <TouchableHighlight onPress={this.props.onSelect}>
+            <View>
+              <Text style={styles.itemTitle}>{data.title}</Text>
+              <Image
+                source={{uri: data.thumb}}
+                style={styles.thumb} >
+                <Icon 
+                  name='ios-play'
+                  size={28}
+                  style={styles.playIcon}/>
+              </Image>
+            </View>  
+          </TouchableHighlight>
           <View style={styles.itemFooter}>
-            <View style={styles.handleBox}>
-              <Icon
-                name='ios-heart'
-                size={28}             
-                style={styles.heartIcon} />
-              <Text style={styles.handleText}>喜欢</Text>
-            </View>
-            <View style={styles.handleBox}>
-              <Icon
-                name='ios-chatboxes-outline'
-                size={28}             
-                style={styles.commentIcon} />
-              <Text style={styles.handleText}>评论</Text>
-            </View>
+            <TouchableHighlight ref="creationId" value={data._id} onPress={this._love}>
+              <View style={styles.handleBox}>
+                <Icon
+                  name={this.state.love ? 'ios-heart' : 'ios-heart-outline'}
+                  size={28}             
+                  style={styles.heartIcon} />
+                <Text style={styles.handleText}>喜欢</Text>
+              </View>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={this.props.onSelect}>
+              <View style={styles.handleBox}>
+                <Icon
+                  name='ios-chatboxes-outline'
+                  size={28}             
+                  style={styles.commentIcon} />
+                <Text style={styles.handleText}>评论</Text>
+              </View>
+            </TouchableHighlight>
           </View>
         </View>
-      </TouchableHighlight>
+      
     )
   }
 })
