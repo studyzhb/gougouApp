@@ -6,20 +6,15 @@
  */
 
 import React from 'react'
-import Icon from 'react-native-vector-icons/Ionicons'
 import {
   AppRegistry,
-  StyleSheet,
-  Text,
-  Navigator,
-  TouchableOpacity,
-  TabBarIOS,
-  View
+  NetInfo,
+  Navigator
 } from 'react-native'
 
-var List = require('./app/list/index.js')
-var Edit = require('./app/edit/index.js')
-var Account = require('./app/account/index.js')
+
+var Index = require('./app/index.js')
+
 
 var gougouApp = React.createClass({
   getInitialState() {
@@ -27,62 +22,54 @@ var gougouApp = React.createClass({
       selectedTab: 'account',
       notifCount: 0,
       presses: 0,
+      connectionType: 'none',//网络连接状况
     }
   },
-  _selectTab(tabName){
+  componentWillMount: function() {
+    NetInfo.addEventListener(
+        'change',
+        this._handleConnectionInfoChange
+    );
+  },
+  componentWillUnmount: function() {
+    NetInfo.removeEventListener(
+        'change',
+        this._handleConnectionInfoChange
+    );
+  },
+  _handleConnectionInfoChange: function(connectionInfo) {
+    //当前网络状态
+    if(connectionInfo !== 'wifi') {
+      AlertIOS.alert(networkInfo[connectionInfo])
+    }
 
+    this.setState({
+      connectionType: connectionInfo
+    });
+  },
+  _selectTab(tabName){
     this.setState({
       selectedTab: tabName
     })
   },
   render() {
     return (
-      <TabBarIOS tintColor="#ee735c" style={{height: 100}}>
-        <Icon.TabBarItemIOS
-          title="首页"
-          iconSize={30}
-          iconName="ios-home-outline"
-          selectedIconName="ios-home"
-          selected={this.state.selectedTab === 'list'}
-          onPress={() => this._selectTab('list')}>
-          <Navigator
-            initialRoute={{name: 'list', component: List }}
-            configureScene={
-              (route) => {
-                return Navigator.SceneConfigs.FloatFromRight
-              }
-            }
-            renderScene={
-              (route, navigator) => {
-                var Component = route.component
-                return <Component {...route.params} navigator={navigator} />
-              }
-            }
-          />
-        </Icon.TabBarItemIOS>
-        <Icon.TabBarItemIOS
-          title="视频"
-          iconName="ios-videocam-outline"
-          selectedIconName="ios-videocam"
-          selected={this.state.selectedTab === 'edit'}
-          onPress={() => this._selectTab('edit')}>
-          <Edit />
-        </Icon.TabBarItemIOS>
-        <Icon.TabBarItemIOS
-          title="我"
-          iconName="ios-person-outline"
-          selectedIconName="ios-person"
-          selected={this.state.selectedTab === 'account'}
-          onPress={() => this._selectTab('account')}>
-          <Account />
-        </Icon.TabBarItemIOS>
-      </TabBarIOS>
+      <Navigator
+        initialRoute={{name: 'index', component: Index}}
+        configureScene={
+          (route) => {
+            return Navigator.SceneConfigs.FloatFromRight
+          }
+        }
+        renderScene={
+          (route, navigator) => {
+            var Component = route.component
+            return <Component {...route.params} navigator={navigator} />
+          }
+        }
+      />
     )
   }
-})
-
-const styles = StyleSheet.create({
-  
 })
 
 AppRegistry.registerComponent('gougouApp', () => gougouApp)

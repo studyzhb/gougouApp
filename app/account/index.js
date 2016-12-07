@@ -1,22 +1,41 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React from 'react'
 import {
   StyleSheet,
   Text,
+  Switch,
   TouchableOpacity,
   View,
   Image,
-
 } from 'react-native'
 import IonIcons from 'react-native-vector-icons/Ionicons'
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
+var Condition = require('./create/condition')
 
 var Account = React.createClass({
+  getInitialState() {
+    return {
+      nightMode: false,
+    }
+  },
+  componentDidMount() {
+  },
+  _pushToMakeCondition(){
+    this.props.navigator.push({
+      name: 'Condition',
+      component: Condition,
+      params: {
+      }
+    })
+  },
   render() {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
+        <View>
+          <Text>{JSON.stringify(this.state.connectionType)}</Text>
+        </View>
           <View style={styles.me}>
             <Image source={{uri: 'http://oh13njw2l.bkt.clouddn.com/avatar.jpg?imageView2/0/w/300/h/300'}} style={styles.avatar} />
             <View style={styles.meInfo}>
@@ -78,11 +97,11 @@ var Account = React.createClass({
             </View>
           </View>
           <View style={styles.bar}>
-          <FontAwesomeIcon name='calendar-check-o' size={20} style={styles.barItemIcon} color='#ffa01e' />
-            <View style={styles.itemTitle}>
-              <Text style={styles.itemText}>我的路径</Text>
+            <FontAwesomeIcon name='calendar-check-o' size={20} style={styles.barItemIcon} color='#ffa01e' />
+            <TouchableOpacity onPress={this._pushToMakeCondition} style={styles.itemTitle}>
+              <Text style={styles.itemText}>发一个</Text>
               <FontAwesomeIcon name='chevron-right' size={15} style={styles.barForwardIcon} color='#b7bbbf' />
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.contentItem}>
@@ -90,7 +109,18 @@ var Account = React.createClass({
             <FontAwesomeIcon name='moon-o' size={20} style={styles.barItemIcon} color='#8adaff' />
             <View style={[styles.itemLine, styles.itemTitle]}>
               <Text style={styles.itemText}>夜间模式</Text>
-              <FontAwesomeIcon name='chevron-right' size={15} style={styles.barForwardIcon} color='#b7bbbf' />
+              <Switch 
+                onValueChange={() => {
+                  this.setState({
+                    nightMode: !this.state.nightMode
+                  })
+                }}
+                value={this.state.nightMode}
+                onTintColor='red'
+                thumbTintColor='#f9f9f9'
+                tintColor='#e3e3e3'
+                style={styles.nightMode}
+              />
             </View>
           </View>
           <View style={styles.bar}>

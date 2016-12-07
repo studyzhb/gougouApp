@@ -9,7 +9,6 @@ import {
   ListView,
   ActivityIndicator,
   AlertIOS,
-  Navigator,
   TouchableHighlight,
   RefreshControl,
 } from 'react-native'
@@ -135,7 +134,7 @@ var List = React.createClass({
     return (
         <View style={styles.container}>
           <View style={styles.header}> 
-            <Text style={styles.headerTitle}>首页</Text>
+            <Text style={styles.headerTitle}>视频列表</Text>
           </View>
           <ListView
             dataSource={this.state.dataSource}
@@ -161,30 +160,6 @@ var List = React.createClass({
   }
 })
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5FCFF',
-  },
-  header: {
-  	paddingTop: 25,
-  	paddingBottom: 12,
-  	backgroundColor: '#ee735c',
-  },
-  headerTitle: {
-  	fontSize: 16,
-  	fontWeight: '600',
-  	color: '#fff',
-    textAlign: 'center'
-  },
-  loadingMore: {
-    marginVertical: 20,
-  },
-  loadingMoreText: {
-    color: '#777',
-    textAlign: 'center'
-  },
-  
-})
+const styles = require('../../styles/list/index')
 
 module.exports = List

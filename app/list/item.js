@@ -2,12 +2,15 @@
 
 var React = require('react') 
 var ReactNative = require('react-native') 
-var TouchableHighlight = ReactNative.TouchableHighlight
+var TouchableOpacity = ReactNative.TouchableOpacity
 var View = ReactNative.View
 var Text = ReactNative.Text
 var Image = ReactNative.Image
 var AlertIOS = ReactNative.AlertIOS
-var Icon = require('react-native-vector-icons/Ionicons')
+var Slider = ReactNative.Slider
+
+var FontAwesomeIcon = require('react-native-vector-icons/FontAwesome')
+var Video = require('react-native-video').default
 var StyleSheet = ReactNative.StyleSheet
 var Dimensions = ReactNative.Dimensions
 
@@ -16,113 +19,110 @@ var windowWidth = Dimensions.get('window').width
 var Item = React.createClass({
   getInitialState() {
     return {
-      love: false
+      paused: true,
+      rate: 1,
+      muted: true,
+      resizeMode: 'contain',
+      repeat: false,
     }
   },
-  _love() {
-    this.setState({
-      love: !this.state.love
-    })
-    var creationId = this.refs.creationId.props.value
-    AlertIOS.alert(creationId)
+  _onLoad() {
     
+  },
+  _onProgress() {
+
+  },
+  _onEnd() {
+
+  },
+  _onError(err) {
+    console.log(err)
+  },
+  _onSlidingComplete() {
+
+  },
+  _onValueChange(value) {
+
+  },
+  _showVideoTotalTime() {
+    return (
+      <View style={styles.videoDurationBox}>
+        <Text style={styles.videoDurationText}>00:32</Text>
+      </View>
+    )
+  },
+  _showVideoCtrl() {
+    return (
+      <View style={styles.playCtrlBox}>
+        <Text style={styles.playCtrlTime}>00:14</Text>
+        <Slider
+          disabled={false}
+          maximumValue={100}
+          minimumTrackTintColor='red'
+          minimumValue={0}
+          onSlidingComplete={this._onSlidingComplete}
+          onValueChange={this._onValueChange}
+          step={5}
+          style={styles.playCtrlSlide}
+          value={50}
+          />
+        <Text style={styles.playCtrlTime}>00:15</Text>
+        <FontAwesomeIcon name='expand' color='#ffffff' size={10} style={styles.playCtrlFullScreen}/>
+      </View>
+    )
   },
   render() {
     var data = this.props.data
     return (
-        <View style={styles.item}>
-          <TouchableHighlight onPress={this.props.onSelect}>
-            <View>
-              <Text style={styles.itemTitle}>{data.title}</Text>
-              <Image
-                source={{uri: data.thumb}}
-                style={styles.thumb} >
-                <Icon 
-                  name='ios-play'
-                  size={28}
-                  style={styles.playIcon}/>
-              </Image>
-            </View>  
-          </TouchableHighlight>
-          <View style={styles.itemFooter}>
-            <TouchableHighlight ref="creationId" value={data._id} onPress={this._love}>
-              <View style={styles.handleBox}>
-                <Icon
-                  name={this.state.love ? 'ios-heart' : 'ios-heart-outline'}
-                  size={28}             
-                  style={styles.heartIcon} />
-                <Text style={styles.handleText}>喜欢</Text>
-              </View>
-            </TouchableHighlight>
-            <TouchableHighlight onPress={this.props.onSelect}>
-              <View style={styles.handleBox}>
-                <Icon
-                  name='ios-chatboxes-outline'
-                  size={28}             
-                  style={styles.commentIcon} />
-                <Text style={styles.handleText}>评论</Text>
-              </View>
-            </TouchableHighlight>
+      <View style={styles.itemBox}>
+        <TouchableOpacity style={styles.videoBox} onPress={this.props.onSelect}>
+          <Video
+            ref='videoPlayer'
+            source={{uri: 'http://oh180mogg.bkt.clouddn.com/1.mp4'}}
+            style={styles.video}
+            volume={5}
+            paused={this.state.paused}
+            rate={this.state.rate}
+            muted={this.state.muted}
+            resizeMode={this.state.resizeMode}
+            repeat={this.state.repeat}
+            onLoadStart={this._onLoadStart}
+            onLoad={this._onLoad}
+            onProgress={this._onProgress}
+            onEnd={this._onEnd}
+            onError={this._onError}
+          />
+          <Text style={styles.itemTitle}>膜拜这位大叔，民间高手是这样过河的</Text>
+          <View style={styles.playBox}>
+            <FontAwesomeIcon name={true?'play':'pause'} size={20} color='#ffffff' style={true ? styles.playIcon: null}/>
+          </View>
+          {
+            false 
+            ? this._showVideoTotalTime()
+            : this._showVideoCtrl()
+          }
+        </TouchableOpacity>
+        <View style={styles.itemFooter}>
+          <TouchableOpacity style={styles.itemFooterLeft}>
+            <Image source={{uri: 'http://oh13njw2l.bkt.clouddn.com/avatar.jpg?imageView2/0/w/600/h/600'}} style={styles.itemAuthorAvatar}/>
+            <Text style={styles.itemAuthorName}>我在这里等你</Text>
+          </TouchableOpacity>
+          <View style={styles.itemFooterRight}>
+            <Text style={styles.itemPalyTimes}>35万次播放</Text>
+            <TouchableOpacity style={styles.videoComment}>
+              <FontAwesomeIcon name='commenting' size={16} color='#999999' />
+              <Text style={styles.videoCommentNum}>269</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.videoShare}>
+              <FontAwesomeIcon name='ellipsis-h' size={16} color='#999999' />
+            </TouchableOpacity>
           </View>
         </View>
-      
+      </View>
     )
   }
 })
-var styles = StyleSheet.create({
-  item: {
-    width: windowWidth,
-    marginBottom: 10,
-    backgroundColor: '#fff' 
-  },
-  thumb: {
-    width: windowWidth,
-    height: windowWidth * 0.6,
-    resizeMode: 'cover'
-  },
-  itemTitle: {
-    fontSize: 18,
-    padding: 10,
-    color: '#333'
-  },
-  playIcon: {
-    position: 'absolute',
-    bottom: 14,
-    right: 14,
-    width: 46,
-    height: 46,
-    paddingTop: 9,
-    paddingLeft: 18,
-    borderColor: '#fff',
-    borderWidth: 1,
-    borderRadius: 23,
-    backgroundColor: 'transparent',
-    color: '#ed7b66'
-  },
-  itemFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: '#eee'
-  },
-  handleBox: {
-    width: windowWidth / 2 - 0.5,
-    padding: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    backgroundColor: '#fff'
-  },
-  handleText: {
-    paddingLeft: 12,
-    fontSize: 18,
-    color: '#333'
-  },
-  heartIcon: {
-    fontSize: 22,
-    color: '#333'
-  },
-  commentIcon: {
-    fontSize: 22,
-    color: '#333'
-  },
-})
+
+const styles = require('../../styles/list/item')
+
 module.exports = Item

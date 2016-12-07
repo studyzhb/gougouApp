@@ -10,7 +10,7 @@ var config = {
 	},
 	api: {
 		// base: 'http://rap.taobao.org/mockjs/10135/api',
-		base: 'http://192.168.2.7:9999/api',
+		base: 'http://127.0.0.1:9999/api',
 		creations: '/creations',
 		creationsAdd: '/creations/add',
 		comments: '/comments',

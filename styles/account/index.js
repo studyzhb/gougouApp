@@ -16,28 +16,28 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     backgroundColor: '#f8fafc',
   },
-  header:{
+  header: {
     width: windowWidth,
     height: windowHeight * .25,
     backgroundColor: '#34394b',
-    paddingTop: windowHeight * .05,   
+    paddingTop: windowHeight * .05,
   },
   me: {
     flexDirection: 'row',
     width: windowWidth,
   },
   avatar: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    marginLeft: 20,
+    width: windowWidth * .2,
+    height: windowWidth * .2,
+    borderRadius: windowWidth * .1,
+    marginLeft: 10,
     marginRight: 10,
   },
-  meInfo:{
+  meInfo: {
     flex: 1,
     justifyContent: 'center',
   },
-  meDesc:{
+  meDesc: {
     flexDirection: 'row',
     marginBottom: 10
   },
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   },
   navs: {
     width: windowWidth,
-    position:'absolute',
+    position: 'absolute',
     bottom: 5,
     height: 30,
     flexDirection: 'row',
@@ -95,12 +95,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: '#ffffff',
-    bottom: 2 
+    bottom: 2
   },
   tabs: {
     flexDirection: 'row',
     width: windowWidth,
-    height: windowHeight * .12,
+    height: windowHeight * .14,
     backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'space-around',
@@ -141,25 +141,23 @@ const styles = StyleSheet.create({
     color: '#41484f',
   },
   itemLine: {
-    borderBottomWidth:1,
+    borderBottomWidth: 0.5,
     borderColor: '#d9dde1'
   },
   barForwardIcon: {
     // position: 'absolute',
     marginRight: 10
-  }
-
-
-
-
-
-
-
-
-
-
-
-
+  },
+  nightMode: { 
+    right: 10, 
+    shadowColor: '#f0f0f0', 
+    shadowOffset: { 
+      width: 3, 
+      height: 3 
+    },
+    shadowOpacity: .8,
+    shadowRadius: 2
+  },
 })
 
 module.exports = styles
