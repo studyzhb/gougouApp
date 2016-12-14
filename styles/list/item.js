@@ -131,6 +131,20 @@ var styles = StyleSheet.create({
   playCtrlFullScreen: {
     marginHorizontal: 10,
   },
+  videoProgressBarBox: {
+    width: videoWidth,
+    height: 2,
+    backgroundColor: '#999999',
+  },
+  videoProgressLoadBarValue: {
+    height: 2,
+    backgroundColor: '#f4f5f6',
+  },
+  videoProgressBarValue: {
+    height: 2,
+    backgroundColor: '#f85959',
+  },
+
 })
 
 module.exports = styles

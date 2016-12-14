@@ -9,11 +9,11 @@ import React from 'react'
 import {
   AppRegistry,
   NetInfo,
-  Navigator
+  Navigator,
 } from 'react-native'
 
-
-var Index = require('./app/index.js')
+var Index = require('./app/index')
+var Storage = require('./app/common/storage')
 
 
 var gougouApp = React.createClass({
@@ -26,6 +26,8 @@ var gougouApp = React.createClass({
     }
   },
   componentWillMount: function() {
+    Storage.init()
+    Storage.remove({key: 'loginState'})
     NetInfo.addEventListener(
         'change',
         this._handleConnectionInfoChange

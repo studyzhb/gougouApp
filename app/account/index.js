@@ -8,18 +8,34 @@ import {
   TouchableOpacity,
   View,
   Image,
+  AlertIOS,
 } from 'react-native'
 import IonIcons from 'react-native-vector-icons/Ionicons'
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
 var Condition = require('./create/condition')
+var Storage = require('../common/storage')
+var Login = require('../entry/login')
+
 
 var Account = React.createClass({
   getInitialState() {
     return {
       nightMode: false,
+      hasLogin: false,
+      defaultAvatar: {uri: 'http://oh13njw2l.bkt.clouddn.com/defaultAvatar.jpg?imageView2/0/w/200/h/200'},
+      unLoginBackImage: {uri: 'http://oh13njw2l.bkt.clouddn.com/accountBack.jpg?imageView2/0/w/800/h/600'},
+      showLoginModal: false,
     }
   },
+  componentWillMount() {
+    var that = this
+    Storage.get('loginState', function(ret){
+      ret && that.setState({hasLogin: true })
+    })
+  },
+
   componentDidMount() {
+
   },
   _pushToMakeCondition(){
     this.props.navigator.push({
@@ -29,47 +45,73 @@ var Account = React.createClass({
       }
     })
   },
+  _showLoginModal() {
+    this.setState({
+      showLoginModal: true
+    })
+  },
+  _closeLoginModal() {
+    this.setState({
+      showLoginModal: false 
+    })
+  },
+  _onLoginSuccess() {
+    var that = this
+    Storage.get('loginState', function(ret){
+      ret && that.setState({hasLogin: true })
+    })
+  },
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-        <View>
-          <Text>{JSON.stringify(this.state.connectionType)}</Text>
-        </View>
-          <View style={styles.me}>
-            <Image source={{uri: 'http://oh13njw2l.bkt.clouddn.com/avatar.jpg?imageView2/0/w/300/h/300'}} style={styles.avatar} />
-            <View style={styles.meInfo}>
-              <View style={styles.meDesc}>
-                <Text style={styles.nickname}>zhuifeng740643787</Text>
-                <View style={styles.genderIconBox}>
-                  <FontAwesomeIcon style={styles.genderIcon} name='mars' color='#ffffff' size={10} />
+        {
+          this.state.hasLogin
+          ? (
+              <View style={styles.header}>
+                <View style={styles.me}>
+                  <Image source={this.state.defaultAvatar} style={styles.avatar} />
+                  <View style={styles.meInfo}>
+                    <View style={styles.meDesc}>
+                      <Text style={styles.nickname}>zhuifeng740643787</Text>
+                      <View style={styles.genderIconBox}>
+                        <FontAwesomeIcon style={styles.genderIcon} name='mars' color='#ffffff' size={10} />
+                      </View>
+                    </View>
+                    <View style={styles.meStat}>
+                      <Text style={styles.meStatItem}>学习时长  339小时</Text>
+                      <Text style={styles.meStatItemDivision}>|</Text>
+                      <Text style={styles.meStatItem}>经验  13489</Text>
+                    </View>
+                  </View>
+                  <FontAwesomeIcon name="envelope-o" size={20} color='#ffffff' style={styles.mailIcon}/>
+                </View>
+                <View style={styles.navs}>
+                  <View style={styles.navItem}>
+                    <Text style={styles.navItemTitle}>关注</Text>
+                    <Text style={styles.navItemNum}>1</Text>
+                  </View>
+                  <Text style={styles.meStatItemDivision}>|</Text>
+                  <View style={styles.navItem}>
+                    <Text style={styles.navItemTitle}>粉丝</Text>
+                    <Text style={styles.navItemNum}>0</Text>
+                  </View>
+                  <Text style={styles.meStatItemDivision}>|</Text>
+                  <View style={styles.navItem}>
+                    <Text style={styles.navItemTitle}>积分</Text>
+                    <Text style={styles.navItemNum}>1</Text>
+                  </View>
                 </View>
               </View>
-              <View style={styles.meStat}>
-                <Text style={styles.meStatItem}>学习时长  339小时</Text>
-                <Text style={styles.meStatItemDivision}>|</Text>
-                <Text style={styles.meStatItem}>经验  13489</Text>
-              </View>
-            </View>
-            <FontAwesomeIcon name="envelope-o" size={20} color='#ffffff' style={styles.mailIcon}/>
-          </View>
-          <View style={styles.navs}>
-            <View style={styles.navItem}>
-              <Text style={styles.navItemTitle}>关注</Text>
-              <Text style={styles.navItemNum}>1</Text>
-            </View>
-            <Text style={styles.meStatItemDivision}>|</Text>
-            <View style={styles.navItem}>
-              <Text style={styles.navItemTitle}>粉丝</Text>
-              <Text style={styles.navItemNum}>0</Text>
-            </View>
-            <Text style={styles.meStatItemDivision}>|</Text>
-            <View style={styles.navItem}>
-              <Text style={styles.navItemTitle}>积分</Text>
-              <Text style={styles.navItemNum}>1</Text>
-            </View>
-          </View>
-        </View>
+            )
+            : (
+              <Image style={[styles.headerUnLogin]} source={this.state.unLoginBackImage}>
+                <TouchableOpacity style={styles.goLoginBox} onPress={this._showLoginModal}>
+                  <Image source={this.state.defaultAvatar} style={styles.defaultAvatar} />
+                  <Text style={styles.loginText}>点击登录</Text>
+                </TouchableOpacity>
+              </Image>
+            )
+          }
         <View style={styles.tabs}>
           <View style={styles.tabItem}>
             <FontAwesomeIcon name='qq' size={25} color='#14b4ff' style={styles.tabIcon} />
@@ -131,6 +173,9 @@ var Account = React.createClass({
             </View>
           </View>
         </View>
+
+
+        <Login visible={this.state.showLoginModal} onClose={this._closeLoginModal} onSuccess={this._onLoginSuccess}/>
       </View>
     )
   }

@@ -33,7 +33,7 @@ const networkInfo = {
 var Index = React.createClass({
   getInitialState() {
     return {
-      selectedTab: 'list',
+      selectedTab: 'account',
       notifCount: 0,
       presses: 0,
       connectionType: 'none',//网络连接状况

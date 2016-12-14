@@ -18,17 +18,23 @@ const styles = StyleSheet.create({
   },
   header: {
     width: windowWidth,
-    height: windowHeight * .25,
+    height: windowHeight * .23,
     backgroundColor: '#34394b',
     paddingTop: windowHeight * .05,
+  },
+  headerUnLogin: {
+    width: windowWidth,
+    height: windowHeight * .23,
+    paddingTop: windowHeight * .05,
+    resizeMode: 'cover',
   },
   me: {
     flexDirection: 'row',
     width: windowWidth,
   },
   avatar: {
-    width: windowWidth * .2,
-    height: windowWidth * .2,
+    width: windowWidth * .18,
+    height: windowWidth * .18,
     borderRadius: windowWidth * .1,
     marginLeft: 10,
     marginRight: 10,
@@ -123,7 +129,7 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     width: windowWidth,
-    height: windowHeight * .07,
+    height: windowHeight * .065,
   },
   barItemIcon: {
     alignSelf: 'center',
@@ -136,7 +142,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   itemText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '200',
     color: '#41484f',
   },
@@ -157,6 +163,22 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: .8,
     shadowRadius: 2
+  },
+  goLoginBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent'
+  },
+  defaultAvatar: {
+    width: windowWidth * .16,
+    height: windowWidth * .16,
+    borderRadius: windowWidth * .08,
+    resizeMode: 'cover',
+    marginVertical: 15,
+  },
+  loginText: {
+    fontSize: 18,
+    color: '#ffffff'
   },
 })
 
