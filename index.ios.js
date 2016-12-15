@@ -27,7 +27,6 @@ var gougouApp = React.createClass({
   },
   componentWillMount: function() {
     Storage.init()
-    Storage.remove({key: 'loginState'})
     NetInfo.addEventListener(
         'change',
         this._handleConnectionInfoChange

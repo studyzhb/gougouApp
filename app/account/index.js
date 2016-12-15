@@ -14,28 +14,37 @@ import IonIcons from 'react-native-vector-icons/Ionicons'
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
 var Condition = require('./create/condition')
 var Storage = require('../common/storage')
-var Login = require('../entry/login')
-
+var Entry = require('../entry/index')
+var Setting = require('./setting')
 
 var Account = React.createClass({
   getInitialState() {
     return {
       nightMode: false,
+      defaultAvatar: null,
+      unLoginBackImage: null,
+      
       hasLogin: false,
-      defaultAvatar: {uri: 'http://oh13njw2l.bkt.clouddn.com/defaultAvatar.jpg?imageView2/0/w/200/h/200'},
-      unLoginBackImage: {uri: 'http://oh13njw2l.bkt.clouddn.com/accountBack.jpg?imageView2/0/w/800/h/600'},
-      showLoginModal: false,
+      loginState: {},
     }
   },
   componentWillMount() {
-    var that = this
-    Storage.get('loginState', function(ret){
-      ret && that.setState({hasLogin: true })
+    this._checkLoginState()
+  },
+  componentDidMount() {
+    this.setState({
+      defaultAvatar: {uri: 'http://oh13njw2l.bkt.clouddn.com/defaultAvatar.jpg?imageView2/0/w/200/h/200'},
+      unLoginBackImage: {uri: 'http://oh13njw2l.bkt.clouddn.com/accountBack.jpg?imageView2/0/w/800/h/600'},
     })
   },
-
-  componentDidMount() {
-
+  _checkLoginState() {
+    var that = this
+    Storage.get('loginState', function(ret){
+      that.setState({
+        hasLogin: ret ? true : false,
+        loginState: ret,
+      })
+    })
   },
   _pushToMakeCondition(){
     this.props.navigator.push({
@@ -45,20 +54,27 @@ var Account = React.createClass({
       }
     })
   },
-  _showLoginModal() {
-    this.setState({
-      showLoginModal: true
+  _pushToSetting() {
+    if(!this.state.hasLogin){
+      this._goLogin()
+      return 
+    }
+    this.props.navigator.push({
+      name: 'Setting',
+      component: Setting,
+      params: {
+        logoutCallback: this._checkLoginState
+      }
     })
   },
-  _closeLoginModal() {
-    this.setState({
-      showLoginModal: false 
-    })
-  },
-  _onLoginSuccess() {
-    var that = this
-    Storage.get('loginState', function(ret){
-      ret && that.setState({hasLogin: true })
+
+  _goLogin() {
+    this.props.navigator.push({
+      name: 'Entry',
+      component: Entry,
+      params: {
+        loginSuccessCallBack: this._checkLoginState
+      }
     })
   },
   render() {
@@ -72,7 +88,7 @@ var Account = React.createClass({
                   <Image source={this.state.defaultAvatar} style={styles.avatar} />
                   <View style={styles.meInfo}>
                     <View style={styles.meDesc}>
-                      <Text style={styles.nickname}>zhuifeng740643787</Text>
+                      <Text style={styles.nickname}>{this.state.loginState.nickname || '未设置'}</Text>
                       <View style={styles.genderIconBox}>
                         <FontAwesomeIcon style={styles.genderIcon} name='mars' color='#ffffff' size={10} />
                       </View>
@@ -105,7 +121,7 @@ var Account = React.createClass({
             )
             : (
               <Image style={[styles.headerUnLogin]} source={this.state.unLoginBackImage}>
-                <TouchableOpacity style={styles.goLoginBox} onPress={this._showLoginModal}>
+                <TouchableOpacity style={styles.goLoginBox} onPress={this._goLogin}>
                   <Image source={this.state.defaultAvatar} style={styles.defaultAvatar} />
                   <Text style={styles.loginText}>点击登录</Text>
                 </TouchableOpacity>
@@ -131,20 +147,20 @@ var Account = React.createClass({
           </View>
         </View>
         <View style={styles.contentItem}>
-          <View style={styles.bar}>
+          <TouchableOpacity style={styles.bar}>
             <FontAwesomeIcon name='history' size={20} style={styles.barItemIcon} color='#14b4ff' />
             <View style={[styles.itemLine, styles.itemTitle]}>
               <Text style={styles.itemText}>历史记录</Text>
               <FontAwesomeIcon name='chevron-right' size={15} style={styles.barForwardIcon} color='#b7bbbf' />
             </View>
-          </View>
-          <View style={styles.bar}>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={this._pushToMakeCondition} style={styles.bar}>
             <FontAwesomeIcon name='calendar-check-o' size={20} style={styles.barItemIcon} color='#ffa01e' />
-            <TouchableOpacity onPress={this._pushToMakeCondition} style={styles.itemTitle}>
+            <View style={styles.itemTitle}>
               <Text style={styles.itemText}>发一个</Text>
               <FontAwesomeIcon name='chevron-right' size={15} style={styles.barForwardIcon} color='#b7bbbf' />
-            </TouchableOpacity>
-          </View>
+            </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.contentItem}>
           <View style={styles.bar}>
@@ -165,17 +181,14 @@ var Account = React.createClass({
               />
             </View>
           </View>
-          <View style={styles.bar}>
+          <TouchableOpacity style={styles.bar} onPress={this._pushToSetting}>
             <FontAwesomeIcon name='gear' size={20} style={styles.barItemIcon} color='#73dfb3' />
             <View style={styles.itemTitle}>
               <Text style={styles.itemText}>设置</Text>
               <FontAwesomeIcon name='chevron-right' size={15} style={styles.barForwardIcon} color='#b7bbbf' />
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
-
-
-        <Login visible={this.state.showLoginModal} onClose={this._closeLoginModal} onSuccess={this._onLoginSuccess}/>
       </View>
     )
   }

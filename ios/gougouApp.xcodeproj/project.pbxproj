@@ -34,7 +34,6 @@
 		A1634ACCF18A42E1BB8C4FB5 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AB2A2F488432471592D05F26 /* Foundation.ttf */; };
 		A9CE437190B44FF29EEC834E /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4512AE3FD8EF4243A6F78819 /* EvilIcons.ttf */; };
 		B4156EF942644360A9C5B739 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D1AEEC68977A491584DB72B2 /* Entypo.ttf */; };
-		B5D55B6037694DD1A2C2B4FD /* libimageCropPicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18D06F2F2D794A41B45ABB91 /* libimageCropPicker.a */; };
 		C1A74D4B9B6646F39017D034 /* libRNAudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 065C2A523E394123AB820E26 /* libRNAudio.a */; };
 		E0220BA17C8B4B70B4E79E5F /* libRCTVideo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA2DE7124CAA470F82DCE862 /* libRCTVideo.a */; };
 		F5F5AF6A9FBC4CCDBE93F56F /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2CA93A634EC04C65A43E7A36 /* Zocial.ttf */; };
@@ -233,7 +232,6 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = gougouApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = gougouApp/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
-		18D06F2F2D794A41B45ABB91 /* libimageCropPicker.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libimageCropPicker.a; sourceTree = "<group>"; };
 		1C54195A1DF92F2B001246E5 /* ART.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ART.xcodeproj; path = "../node_modules/react-native/Libraries/ART/ART.xcodeproj"; sourceTree = "<group>"; };
 		1C5419741DF92F3C001246E5 /* RCTCameraRoll.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTCameraRoll.xcodeproj; path = "../node_modules/react-native/Libraries/CameraRoll/RCTCameraRoll.xcodeproj"; sourceTree = "<group>"; };
 		1FF88EC1E8A34EB281835F2B /* RNAudio.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNAudio.xcodeproj; path = "../node_modules/react-native-audio/ios/RNAudio.xcodeproj"; sourceTree = "<group>"; };
@@ -282,7 +280,6 @@
 				1EF5FE53D20D4E32876590FA /* libRNVectorIcons.a in Frameworks */,
 				E0220BA17C8B4B70B4E79E5F /* libRCTVideo.a in Frameworks */,
 				3997DC359561474FA8CF4438 /* libRNImagePicker.a in Frameworks */,
-				B5D55B6037694DD1A2C2B4FD /* libimageCropPicker.a in Frameworks */,
 				C1A74D4B9B6646F39017D034 /* libRNAudio.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

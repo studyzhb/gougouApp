@@ -10,7 +10,7 @@ var config = {
 	},
 	api: {
 		// base: 'http://rap.taobao.org/mockjs/10135/api',
-		base: 'http://127.0.0.1:9999/api',
+		base: 'http://1.0.1.119:9999/api',
 		imageVerifyCode: '/verify/code/image',
 		smsVerifyCode: '/verify/code/sms',
 		register: '/user/register',

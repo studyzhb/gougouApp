@@ -41,8 +41,6 @@ var Register = React.createClass({
       showPassword: false,
     }
   },
-  componentDidMount() {
-  },
   _fetchImageVerifyCode(mobile) {
     if(this.state.fetchingImageVerifyCode) {
       return false
@@ -116,7 +114,6 @@ var Register = React.createClass({
     return this.state.validMobile && this.state.validImageVerifyCode && this.state.validSmsVerifyCode && this.state.validPassword
   },
   _changeMobileText(text) {
-
     var _state = {mobile: text}
     var validMobile = /^1\d{10}$/.test(text)
     _state.validMobile = validMobile
@@ -173,11 +170,9 @@ var Register = React.createClass({
   },
 
   _submit() {
-
     if(!this._canSubmit() || this.state.submiting) {
       return false
     }
-
     var that = this
     that.setState({submiting: true})
     var url = config.api.base + config.api.register
@@ -209,8 +204,8 @@ var Register = React.createClass({
           fansNumber: user.fansNumber,
           collectConditionNumber: user.collectConditionNumber,
         },
+        expires: 1000 * 1200,
       })
-      that.props.onClose()
       that.props.onSuccess()
     }).catch((err) => {
       console.warn(err)
@@ -222,7 +217,7 @@ var Register = React.createClass({
   render() {
     return (
       <Modal
-        animationType='fade'
+        animationType={this.props.animationType}
         visible={this.props.visible}
         transparent={false} >
         <View style={styles.container}>
@@ -273,7 +268,7 @@ var Register = React.createClass({
         <TextInput
           placeholder='输入图片验证码'
           placeholderTintColor='#d8dadc'
-          keyboardType='phone-pad'
+          keyboardType='default'
           style={styles.textInput}
           multiline={false}
           editable={true}

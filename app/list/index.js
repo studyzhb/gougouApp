@@ -50,7 +50,7 @@ var List = React.createClass({
       })
     }
     
-    request.get(config.api.base + config.api.creations, {accessToken: 'asdasd', page: page})
+    request.get(config.api.base + config.api.conditionList, {page: page})
     .then((data) => {
       if(data.success){
         var items = cacheResult.items

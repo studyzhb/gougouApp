@@ -93,10 +93,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  disableLoginBtn: {
+    backgroundColor: '#c4c7c9',
+  },
   loginText: {
     fontSize: 18,
     letterSpacing : 2,
     color: '#ffffff'
+  },
+  loginLoading: {
+    height: windowHeight * .06,
   },
   forgetPasswordBox: {
     marginTop: 5,
